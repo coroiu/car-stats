@@ -13,7 +13,7 @@ export abstract class Scraper<DataModel> {
       totalCount = fetchResult.totalCount;
       pageSize = fetchResult.pageSize ?? this.pageSize;
       console.log(
-        `Fetching page ${pageNumber} of ${Math.floor(totalCount / pageNumber)}`
+        `Fetching page ${pageNumber} of ${Math.floor(totalCount / pageSize)}`
       );
       for (const row of data) {
         yield row;

@@ -8,7 +8,7 @@ const HedinUrl =
 
 export class HedinScraper extends Scraper<CarModel> {
   constructor() {
-    super(24);
+    super(500);
   }
 
   protected async fetch(
@@ -34,8 +34,8 @@ export class HedinScraper extends Scraper<CarModel> {
 
           year: car.vehicleDetails.year,
           mileage: car.vehicleDetails.mileage,
-          condition: car.condition.toLowerCase(),
-          fuel: car.vehicleDetails.fuel.toLowerCase(),
+          condition: car.condition?.toLowerCase(),
+          fuel: car.vehicleDetails.fuel?.toLowerCase(),
           price: car.prices.buyOut > 0 ? car.prices.buyOut : car.prices.original,
           // leasePrice?: ,
 
