@@ -1,12 +1,16 @@
-import { TestScraper } from './test.scraper';
-
-console.log("hello world");
-
-const scraper = new TestScraper();
+import { HedinScraper } from './scrapers/hedin/hedin.scraper';
 
 async function run() {
-  for await (const row of scraper.scrape()) {
-    console.log('Data: ', row);
+  const hedinScraper = new HedinScraper();
+
+  let i = 0;
+
+  for await (const car of hedinScraper.scrape()) {
+    console.log(car);
+
+    if (++i > 70) {
+      return;
+    }
   }
 }
 

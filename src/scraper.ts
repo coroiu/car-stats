@@ -1,5 +1,5 @@
 export abstract class Scraper<DataModel> {
-  private readonly pageSize = 24;
+  constructor(private readonly pageSize = 24) {}
 
   async *scrape(): AsyncGenerator<DataModel, void, void> {
     let totalCount = Number.MAX_SAFE_INTEGER;
@@ -12,7 +12,9 @@ export abstract class Scraper<DataModel> {
       const data = fetchResult.data();
       totalCount = fetchResult.totalCount;
       pageSize = fetchResult.pageSize ?? this.pageSize;
-      console.log(`Fetching page ${pageNumber} of ${Math.floor(totalCount/pageNumber)}`);
+      console.log(
+        `Fetching page ${pageNumber} of ${Math.floor(totalCount / pageNumber)}`
+      );
       for (const row of data) {
         yield row;
         ++emittedCount;
@@ -20,7 +22,10 @@ export abstract class Scraper<DataModel> {
     }
   }
 
-  protected abstract fetch(pageNumber: number, pageSize: number): Promise<FetchResult<DataModel>>;
+  protected abstract fetch(
+    pageNumber: number,
+    pageSize: number
+  ): Promise<FetchResult<DataModel>>;
 
   private nextPage(emittedCount: number): number {
     return Math.floor(emittedCount / this.pageSize);
