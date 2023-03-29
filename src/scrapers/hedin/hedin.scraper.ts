@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { CarModel } from "../../models/car.model";
 import { FetchResult, Scraper } from "../../scraper";
-import { HedinApiResponse } from './response-model';
+import { HedinApiResponse } from "./response-model";
 
 const HedinUrl =
   "https://www.hedinbil.se/apicommerce/HedinBil/SearchCarsWithFilters";
@@ -20,10 +20,10 @@ export class HedinScraper extends Scraper<CarModel> {
     );
     const json: HedinApiResponse = await result.json();
     const brands = extractBrands(json);
-    
-    function *data() {
+
+    function* data() {
       for (const car of json.cars) {
-        const id  = car.link.href.split('/')[2];
+        const id = car.link.href.split("/")[2];
         const { brand, model, title } = parseCarName(car.title, brands);
         yield {
           id,
@@ -36,7 +36,8 @@ export class HedinScraper extends Scraper<CarModel> {
           mileage: car.vehicleDetails.mileage,
           condition: car.condition?.toLowerCase(),
           fuel: car.vehicleDetails.fuel?.toLowerCase(),
-          price: car.prices.buyOut > 0 ? car.prices.buyOut : car.prices.original,
+          price:
+            car.prices.buyOut > 0 ? car.prices.buyOut : car.prices.original,
           // leasePrice?: ,
 
           locationName: car.facilityCity,
@@ -54,28 +55,33 @@ export class HedinScraper extends Scraper<CarModel> {
 }
 
 function extractBrands(response: HedinApiResponse): Brand[] {
-  const brandFilter = response.filterOr.find(f => f.key === 'br');
+  const brandFilter = response.filterOr.find((f) => f.key === "br");
 
   if (brandFilter === undefined) {
     return [];
   }
 
-  return brandFilter.options.map(option => ({
-      id: option.brandId, 
-      name: option.brandName, 
-      models: option.carModels.map(m => ({ id: m.modelId, name: m.modelName })).sort((a, b) => b.name.length - a.name.length)
-    }));
+  return brandFilter.options.map((option) => ({
+    id: option.brandId,
+    name: option.brandName,
+    models: option.carModels
+      .map((m) => ({ id: m.modelId, name: m.modelName }))
+      .sort((a, b) => b.name.length - a.name.length),
+  }));
 }
 
-function parseCarName(fullName: string, brands: Brand[]): { brand?: Brand; model?: Model; title: string } {
-  const brand = brands.find(b => fullName.startsWith(b.name));
+function parseCarName(
+  fullName: string,
+  brands: Brand[]
+): { brand?: Brand; model?: Model; title: string } {
+  const brand = brands.find((b) => fullName.startsWith(b.name));
 
   if (brand === undefined) {
     return { title: fullName };
   }
 
   const nameWithoutBrand = fullName.slice(brand.name.length + 1);
-  const model = brand.models.find(m => nameWithoutBrand.startsWith(m.name));
+  const model = brand.models.find((m) => nameWithoutBrand.startsWith(m.name));
 
   if (model === undefined) {
     return { brand, title: nameWithoutBrand };

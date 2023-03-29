@@ -24,5 +24,4 @@ CREATE TABLE "public"."price" (
     "createdAt" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
 ) WITH (oids = false);
 
-
 -- 2023-03-27 18:29:04.02296+00
