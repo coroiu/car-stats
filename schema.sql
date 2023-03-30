@@ -13,6 +13,7 @@ CREATE TABLE "public"."car" (
     "fuel" character varying NOT NULL,
     "locationName" character varying(250) NOT NULL,
     "facilityName" character varying(250) NOT NULL,
+    "source" character varying(100) NOT NULL,
     CONSTRAINT "car_id" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
@@ -24,4 +25,5 @@ CREATE TABLE "public"."price" (
     "createdAt" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
 ) WITH (oids = false);
 
--- 2023-03-27 18:29:04.02296+00
+
+-- 2023-03-30 18:44:52.135853+00

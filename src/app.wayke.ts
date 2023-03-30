@@ -6,55 +6,57 @@ import { CarModel } from "./models/car.model";
 import cron from 'node-cron';
 import { WaykeScraper } from './scrapers/wayke/wayke.scraper';
 
-const limit = 500000;
-// const limit = 20;
+// const limit = 500000;
+const limit = 300;
 const printInterval = 500;
 const unknown = "Unknown";
 
 async function run() {
   console.log("Initializing...");
-  const hedinScraper = new HedinScraper();
   const waykeScraper = new WaykeScraper();
-  const client = new Client({
-    host: config.postgresql.host,
-    port: config.postgresql.port,
-    user: config.postgresql.username,
-    password: config.postgresql.password,
-    database: config.postgresql.database,
-  });
-  await client.connect();
+  // const hedinScraper = new HedinScraper();
+  // const client = new Client({
+  //   host: config.postgresql.host,
+  //   port: config.postgresql.port,
+  //   user: config.postgresql.username,
+  //   password: config.postgresql.password,
+  //   database: config.postgresql.database,
+  // });
+  // await client.connect();
 
-  let i = 0;
-  for await (const car of hedinScraper.scrape()) {
-    if (i % printInterval === 0) {
-      console.log(`Parsing Hedin, processed entries: ${i}`);
-    }
-
-    await insertIntoSQL(client, car, 'hedin');
-
-    if (++i > limit) {
-      break;
-    }
-  }
-
-  // for await (const car of waykeScraper.scrape()) {
+  // let i = 0;
+  // for await (const car of hedinScraper.scrape()) {
   //   if (i % printInterval === 0) {
-  //     console.log(`Parsing Wayke, processed entries: ${i}`);
+  //     console.log(`Parsing Hedin, processed entries: ${i}`);
   //   }
 
-  //   await insertIntoSQL(client, car, 'wayke');
+  //   await insertIntoSQL(client, car);
 
   //   if (++i > limit) {
   //     break;
   //   }
   // }
 
+  let i = 0;
+  for await (const car of waykeScraper.scrape()) {
+    if (i % printInterval === 0) {
+      console.log(`Parsing Hedin, processed entries: ${i}`);
+    }
+
+    // console.log(car);
+    // await insertIntoSQL(client, car);
+
+    if (++i > limit) {
+      break;
+    }
+  }
+
   console.log(`Finished! Total entries processed: ${i}`);
 
-  await client.end();
+  // await client.end();
 }
 
-async function insertIntoSQL(client: Client, car: CarModel, source: string): Promise<void> {
+async function insertIntoSQL(client: Client, car: CarModel): Promise<void> {
   await client.query(
     `INSERT INTO car(
         "id",
@@ -67,9 +69,8 @@ async function insertIntoSQL(client: Client, car: CarModel, source: string): Pro
         "condition",
         "fuel",
         "locationName",
-        "facilityName",
-        "source"
-      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT DO NOTHING`,
+        "facilityName"
+      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT DO NOTHING`,
     [
       car.id,
       car.fullName ?? unknown,
@@ -82,7 +83,6 @@ async function insertIntoSQL(client: Client, car: CarModel, source: string): Pro
       car.fuel ?? unknown,
       car.locationName ?? unknown,
       car.facilityName ?? unknown,
-      source
     ]
   );
 

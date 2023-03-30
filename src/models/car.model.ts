@@ -7,7 +7,7 @@ export interface CarModel {
 
   year: number;
   mileage: number;
-  condition: "begagnad" | "best" | "demo" | "ny" | "sample";
+  condition?: "begagnad" | "best" | "demo" | "ny" | "sample";
   fuel:
     | "bensin"
     | "diesel"
