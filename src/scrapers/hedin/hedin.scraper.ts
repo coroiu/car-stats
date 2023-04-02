@@ -1,12 +1,12 @@
 import fetch from "node-fetch";
 import { CarModel } from "../../models/car.model";
-import { FetchResult, Scraper } from "../../scraper";
+import { FetchResult, SingleDimensionScraper } from '../single-dimension-scraper';
 import { HedinApiResponse } from "./response-model";
 
 const HedinUrl =
   "https://www.hedinbil.se/apicommerce/HedinBil/SearchCarsWithFilters";
 
-export class HedinScraper extends Scraper<CarModel> {
+export class HedinScraper extends SingleDimensionScraper<CarModel> {
   constructor() {
     super(500);
   }

@@ -43,7 +43,6 @@ async function run() {
       console.log(`Parsing Wayke, processed entries: ${i}`);
     }
 
-    // console.log(car);
     await insertIntoSQL(client, car);
 
     if (++i > limit) {
@@ -53,7 +52,7 @@ async function run() {
 
   console.log(`Finished! Total entries processed: ${i}`);
 
-  // await client.end();
+  await client.end();
 }
 
 async function insertIntoSQL(client: Client, car: CarModel): Promise<void> {
@@ -69,8 +68,9 @@ async function insertIntoSQL(client: Client, car: CarModel): Promise<void> {
         "condition",
         "fuel",
         "locationName",
-        "facilityName"
-      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) ON CONFLICT DO NOTHING`,
+        "facilityName",
+        "source"
+      ) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT DO NOTHING`,
     [
       car.id,
       car.fullName ?? unknown,
@@ -83,6 +83,7 @@ async function insertIntoSQL(client: Client, car: CarModel): Promise<void> {
       car.fuel ?? unknown,
       car.locationName ?? unknown,
       car.facilityName ?? unknown,
+      'wayke'
     ]
   );
 

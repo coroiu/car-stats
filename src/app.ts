@@ -4,7 +4,7 @@ import { config } from "./config";
 import { CarModel } from "./models/car.model";
 
 import cron from 'node-cron';
-import { WaykeSubScraper } from './scrapers/wayke/wayke.scraper';
+import { WaykeScraper } from './scrapers/wayke/wayke.scraper';
 
 const limit = 500000;
 // const limit = 20;
@@ -14,7 +14,7 @@ const unknown = "Unknown";
 async function run() {
   console.log("Initializing...");
   const hedinScraper = new HedinScraper();
-  const waykeScraper = new WaykeSubScraper();
+  const waykeScraper = new WaykeScraper();
   const client = new Client({
     host: config.postgresql.host,
     port: config.postgresql.port,
@@ -37,17 +37,17 @@ async function run() {
     }
   }
 
-  // for await (const car of waykeScraper.scrape()) {
-  //   if (i % printInterval === 0) {
-  //     console.log(`Parsing Wayke, processed entries: ${i}`);
-  //   }
+  for await (const car of waykeScraper.scrape()) {
+    if (i % printInterval === 0) {
+      console.log(`Parsing Wayke, processed entries: ${i}`);
+    }
 
-  //   await insertIntoSQL(client, car, 'wayke');
+    await insertIntoSQL(client, car, 'wayke');
 
-  //   if (++i > limit) {
-  //     break;
-  //   }
-  // }
+    if (++i > limit) {
+      break;
+    }
+  }
 
   console.log(`Finished! Total entries processed: ${i}`);
 
