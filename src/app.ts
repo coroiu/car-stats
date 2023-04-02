@@ -4,7 +4,7 @@ import { config } from "./config";
 import { CarModel } from "./models/car.model";
 
 import cron from 'node-cron';
-import { WaykeScraper } from './scrapers/wayke/wayke.scraper';
+import { WaykeSubScraper } from './scrapers/wayke/wayke.scraper';
 
 const limit = 500000;
 // const limit = 20;
@@ -14,7 +14,7 @@ const unknown = "Unknown";
 async function run() {
   console.log("Initializing...");
   const hedinScraper = new HedinScraper();
-  const waykeScraper = new WaykeScraper();
+  const waykeScraper = new WaykeSubScraper();
   const client = new Client({
     host: config.postgresql.host,
     port: config.postgresql.port,

@@ -6,8 +6,8 @@ import { CarModel } from "./models/car.model";
 import cron from 'node-cron';
 import { WaykeScraper } from './scrapers/wayke/wayke.scraper';
 
-// const limit = 500000;
-const limit = 300;
+const limit = 500000;
+// const limit = 300;
 const printInterval = 500;
 const unknown = "Unknown";
 
@@ -15,14 +15,14 @@ async function run() {
   console.log("Initializing...");
   const waykeScraper = new WaykeScraper();
   // const hedinScraper = new HedinScraper();
-  // const client = new Client({
-  //   host: config.postgresql.host,
-  //   port: config.postgresql.port,
-  //   user: config.postgresql.username,
-  //   password: config.postgresql.password,
-  //   database: config.postgresql.database,
-  // });
-  // await client.connect();
+  const client = new Client({
+    host: config.postgresql.host,
+    port: config.postgresql.port,
+    user: config.postgresql.username,
+    password: config.postgresql.password,
+    database: config.postgresql.database,
+  });
+  await client.connect();
 
   // let i = 0;
   // for await (const car of hedinScraper.scrape()) {
@@ -40,11 +40,11 @@ async function run() {
   let i = 0;
   for await (const car of waykeScraper.scrape()) {
     if (i % printInterval === 0) {
-      console.log(`Parsing Hedin, processed entries: ${i}`);
+      console.log(`Parsing Wayke, processed entries: ${i}`);
     }
 
     // console.log(car);
-    // await insertIntoSQL(client, car);
+    await insertIntoSQL(client, car);
 
     if (++i > limit) {
       break;
