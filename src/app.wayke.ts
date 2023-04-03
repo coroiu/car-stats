@@ -6,8 +6,8 @@ import { CarModel } from "./models/car.model";
 import cron from 'node-cron';
 import { WaykeScraper } from './scrapers/wayke/wayke.scraper';
 
-const limit = 500000;
-// const limit = 300;
+// const limit = 500000;
+const limit = 100;
 const printInterval = 500;
 const unknown = "Unknown";
 

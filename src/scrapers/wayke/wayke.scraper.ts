@@ -1,18 +1,19 @@
 import fetch from "node-fetch";
 import { CarModel } from "../../models/car.model";
 import { delay } from '../../utils';
-import { DimensionResult, DimensionValue, FetchResult, MultiDimensionScraper } from '../multi-dimension-scraper';
+import { allCombinations, DimensionValue, FetchResult, MultiDimensionScraper } from '../multi-dimension-scraper';
 import { FuelApiResponse, WaykeApiResponse } from "./response-model"
 
 const WaykeUrl =
   "https://www.wayke.se/api/search";
+const UseColorsBreakpoint = 1200;
 
 export class WaykeScraper extends MultiDimensionScraper<CarModel> {
   constructor() {
     super(100);
   }
 
-  protected async fetchDimensions(): Promise<DimensionResult> {
+  protected async fetchDimensions(): Promise<DimensionValue[][]> {
     const result = await fetch(WaykeUrl);
     const json: WaykeApiResponse = await result.json();
 
@@ -23,12 +24,23 @@ export class WaykeScraper extends MultiDimensionScraper<CarModel> {
       throw new Error('Failed to get wayke facets');
     }
 
-    return {
-      dimensions: [
-        { name: 'modelSeries', values: modelSeriesFacet.filters.map(f => encodeURIComponent(f.displayName)) },
-        { name: 'color', values: colorFacet.filters.map(f => encodeURIComponent(f.displayName)) }
-      ]
-    };
+    // const modelSeries = modelSeriesFacet.filters.map(f => encodeURIComponent(f.displayName));
+    const colors = colorFacet.filters.map(f => encodeURIComponent(f.displayName));
+
+    return modelSeriesFacet.filters.flatMap(ms => {
+      if (ms.count === 0) {
+        return [];
+      }
+
+      if (ms.count > UseColorsBreakpoint) {
+        return allCombinations([
+          { name: 'modelSeries', values: [ms.displayName] }, 
+          { name: 'color', values: colors }
+        ]);
+      }
+      
+      return [{ name: 'modelSeries', value: ms.displayName }];
+    });
   }
 
   protected async fetch(

@@ -5,8 +5,9 @@ export abstract class MultiDimensionScraper<DataModel> implements Scraper<DataMo
   constructor(private readonly pageSize = 24) {}
 
   async *scrape(): AsyncGenerator<DataModel, void, void> {
-    const { dimensions } = await this.fetchDimensions();
-    const combinations = allCombinations(dimensions);
+    const combinations = await this.fetchDimensions();
+    console.log(combinations);
+    // const combinations = allCombinations(dimensions);
 
     for ( const combination of combinations ) {
       console.log('Processing dimension set:', combination);
@@ -34,7 +35,7 @@ export abstract class MultiDimensionScraper<DataModel> implements Scraper<DataMo
     }
   }
 
-  protected abstract fetchDimensions(): Promise<DimensionResult>;
+  protected abstract fetchDimensions(): Promise<DimensionValue[][]>;
 
   protected abstract fetch(
     pageNumber: number,
@@ -61,7 +62,7 @@ export interface FetchResult<DataModel> {
   data: () => Generator<DataModel, void, void>;
 }
 
-function allCombinations(dimensions: Dimension[]): DimensionValue[][] {
+export function allCombinations(dimensions: Dimension[]): DimensionValue[][] {
   if (dimensions.length === 1) {
     return dimensions[0].values.map(value => [{ name: dimensions[0].name, value }]);
   }

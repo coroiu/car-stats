@@ -37,17 +37,18 @@ async function run() {
     }
   }
 
-  for await (const car of waykeScraper.scrape()) {
-    if (i % printInterval === 0) {
-      console.log(`Parsing Wayke, processed entries: ${i}`);
-    }
+  // Temporary disabled
+  // for await (const car of waykeScraper.scrape()) {
+  //   if (i % printInterval === 0) {
+  //     console.log(`Parsing Wayke, processed entries: ${i}`);
+  //   }
 
-    await insertIntoSQL(client, car, 'wayke');
+  //   await insertIntoSQL(client, car, 'wayke');
 
-    if (++i > limit) {
-      break;
-    }
-  }
+  //   if (++i > limit) {
+  //     break;
+  //   }
+  // }
 
   console.log(`Finished! Total entries processed: ${i}`);
 
@@ -96,4 +97,6 @@ cron.schedule('0 1 * * *', () => {
   run().catch(console.error);
 });
 
-run().catch(console.error);
+console.log('Ready!');
+
+// run().catch(console.error);
